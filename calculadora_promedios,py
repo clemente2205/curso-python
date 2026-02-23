@@ -1,0 +1,171 @@
+"""modulo para agregar materias de un estudiante y calificaciones.
+
+el modulo mostrara las materias y calificaciones y el promedio general.
+"""
+
+import os
+
+
+def ingresar_calificaciones():
+    """Ingresa el nombre de la materia y calificaciones de un estudiante.
+
+    Returns:
+    -------
+    list
+        Lista con las materias y calificaciones ingresadas.
+    """
+    calificaciones = []
+    materias = []
+    nombre_materia = ""
+    calificacion = ""
+
+    while True:
+        while True:
+            nombre_materia = input("Ingrese el nombre de la materia: ").strip()
+
+            if not nombre_materia:
+                print("Error: El nombre de la materia no puede estar vacío.")
+                print("Por favor, ingrese un nombre válido para la materia.")
+                continue
+
+            materia_existe = False
+            for item in materias:
+                if item.lower() == nombre_materia.lower():
+                    materia_existe = True
+                    break
+
+            if materia_existe:
+                print(f"La materia '{nombre_materia}' ya fue registrada.")
+                print("Por favor, ingrese una materia con nombre diferente.")
+                continue
+
+            break
+
+        while True:
+            calificacion = input("Ingrese la calificación de la materia (0 - 10): ").strip()
+
+            if not calificacion:
+                print("Error: La calificación no puede estar vacía.")
+                continue
+
+            try:
+                valor = float(calificacion)
+            except ValueError:
+                print("Error: La calificación debe ser un número válido.")
+                continue
+
+            if valor < 0 or valor > 10:
+                print("Error: La calificación debe estar entre 0 y 10.")
+                continue
+
+            print(f"Calificación '{valor}' registrada correctamente para la materia '{nombre_materia}'.")
+            break
+
+        materias.append(nombre_materia)
+        calificaciones.append(valor)
+
+        while True:
+            continuar = input("¿Desea ingresar otra materia? (s/n): ").strip().lower()
+
+            if continuar in ("s", "n"):
+                break
+
+            print("Error: Debe ingresar solo 's' o 'n'.")
+
+        if continuar == "n":
+            os.system("cls" if os.name == "nt" else "clear")
+            break
+
+    return materias, calificaciones
+
+
+def calcular_promedio(calificaciones):
+    """Calcula el promedio de las calificaciones ingresadas.
+
+    Parameters:
+    ----------
+    calificaciones : list
+        Lista con las calificaciones ingresadas.
+
+    Returns:
+    -------
+    float
+        El promedio de las calificaciones.
+    """
+    if not calificaciones:
+        print("No se han ingresado calificaciones para calcular el promedio.")
+        return 0.0
+
+    suma = sum(calificaciones)
+    promedio = suma / len(calificaciones)
+    return promedio
+
+
+def determinar_estado(calificaciones, umbral):
+    """Determina el estado del estudiante basado en las calificaciones y un umbral.
+
+    Parameters:
+    ----------
+    calificaciones : list
+        Lista con las calificaciones ingresadas.
+    umbral : float
+        El umbral para determinar si el estudiante aprueba o no.
+
+    Returns:
+    -------
+    list
+        Lista con el estado del estudiante ("Aprobado" o "Reprobado").
+    """
+    aprobadas = []
+    reprobadas = []
+    if not calificaciones:
+        print("No se han ingresado calificaciones para determinar el estado.")
+        return ["Sin calificaciones"]
+
+    for calificacion in calificaciones:
+        indice = calificaciones.index(calificacion)
+        if calificacion >= umbral:
+            aprobadas.append(indice)
+        else:
+            reprobadas.append(indice)
+
+    return aprobadas, reprobadas
+
+
+def encontrar_extremos(calificaciones):
+    """Encuentra la calificación más alta y más baja en la lista de calificaciones.
+
+    Parameters:
+    ----------
+    calificaciones : list
+        Lista con las calificaciones ingresadas.
+
+    Returns:
+    -------
+    tuple
+        Una tupla con la calificación más alta y la más baja.
+    """
+    if not calificaciones:
+        print("No se han ingresado calificaciones para encontrar los extremos.")
+        return None, None
+
+    calificacion_maxima = calificaciones.index(max(calificaciones))
+    calificacion_minima = calificaciones.index(min(calificaciones))
+    return calificacion_maxima, calificacion_minima
+
+
+if __name__ == "__main__":
+    print("Bienvenido a la calculadora de promedios.")
+    materias, calificaciones = ingresar_calificaciones()
+    promedio = calcular_promedio(calificaciones)
+    umbral = 5.0
+    aprobadas, reprobadas = determinar_estado(calificaciones, umbral)
+    calificacion_maxima, calificacion_minima = encontrar_extremos(calificaciones)
+    print("\nResultados:")
+    for i in range(len(materias)):
+        print(f"Materia: {materias[i]}, Calificación: {calificaciones[i]}")
+    print(f"\nPromedio: {promedio}")
+    print(f"Materias aprobadas: {[materias[i] for i in aprobadas]}")
+    print(f"Materias reprobadas: {[materias[i] for i in reprobadas]}")
+    print(f"Calificación más alta: {materias[calificacion_maxima]} ({calificaciones[calificacion_maxima]})")
+    print(f"Calificación más baja: {materias[calificacion_minima]} ({calificaciones[calificacion_minima]})")
